@@ -1,0 +1,6 @@
+let initialItems = [
+  { id: 1, name: "Egg", quantity: 6, purpose: "Pancakes", inCart: false },
+  { id: 2, name: "Milk", quantity: 2, purpose: "Pancakes", inCart: false },
+  { id: 3, name: "Sugar", quantity: 1, purpose: "Pancakes", inCart: false },
+  { id: 4, name: "Flour", quantity: 1, purpose: "Pancakes", inCart: false },
+];
