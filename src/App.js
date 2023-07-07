@@ -81,6 +81,23 @@ export default function App() {
     setItems([]);
   }
 
+  function handleEditSelected(editedItem) {
+    setItems(
+      items.map((item) =>
+        item.id !== editedItem.id
+          ? item
+          : {
+              ...item,
+              name: editedItem.name,
+              quantity: editedItem.quantity,
+              purpose: editedItem.purpose,
+            }
+      )
+    );
+
+    setSelected(null);
+  }
+
   return (
     <>
       <Header />
@@ -96,7 +113,11 @@ export default function App() {
             sortedItems={sortedItems}
           />
           {selected && (
-            <FormEditItem onSelect={setSelected} selected={selected} />
+            <FormEditItem
+              onSelect={setSelected}
+              selected={selected}
+              onEditSelected={handleEditSelected}
+            />
           )}
         </div>
       </div>
@@ -221,25 +242,53 @@ function ShoppingList({
   );
 }
 
-function FormEditItem({ onSelect, selected }) {
+function FormEditItem({ onSelect, selected, onEditSelected }) {
+  const [editedName, setEditedName] = useState(selected.name);
+  const [editedQuantity, setEditedQuantity] = useState(selected.quantity);
+  const [editedPurpose, setEditedPurpose] = useState(selected.purpose);
+
+  function handleEdit(e) {
+    e.preventDefault();
+
+    const editedItem = {
+      ...selected,
+      name: editedName,
+      quantity: editedQuantity,
+      purpose: editedPurpose,
+    };
+
+    onEditSelected(editedItem);
+  }
   return (
     <div className="edit-item__wrapper">
       <h2 className="heading-secondary">Edit {selected.name}</h2>
-      <form className="edit-item">
+      <form className="edit-item" onSubmit={handleEdit}>
         <div className="edit-item__groups">
           <div className="edit-item__group">
             <label>*Item</label>
-            <input type="text" value={selected.name} />
+            <input
+              type="text"
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+            />
           </div>
 
           <div className="edit-item__group">
             <label>*Quantity</label>
-            <input type="text" value={selected.quantity} />
+            <input
+              type="number"
+              value={editedQuantity}
+              onChange={(e) => setEditedQuantity(+e.target.value)}
+            />
           </div>
 
           <div className="edit-item__group">
             <label>Purpose</label>
-            <input type="text" value={selected.purpose} />
+            <input
+              type="text"
+              value={editedPurpose}
+              onChange={(e) => setEditedPurpose(e.target.value)}
+            />
           </div>
         </div>
         <div className="u-text-center">
@@ -349,7 +398,9 @@ function Stats({ items, percentage }) {
       <p>
         {percentage === 100
           ? "Good job! You now have all the items from your list!"
-          : `You already got ${items} items. That is ${percentage}% of all items.`}
+          : items === 0
+          ? "Good luck with finding your desired items!"
+          : `You already got ${items} items in the cart. That is ${percentage}% of all items.`}
       </p>
     </footer>
   );
