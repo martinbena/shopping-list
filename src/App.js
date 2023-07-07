@@ -315,10 +315,10 @@ function Actions() {
   return (
     <div className="actions">
       <select>
-        <option value="">Sort by input order</option>
-        <option value="">Sort by item name</option>
-        <option value="">Sort by cause</option>
-        <option value="">Sort by still needed</option>
+        <option value="input">Sort by input order</option>
+        <option value="name">Sort by item name</option>
+        <option value="purpose">Sort by purpose</option>
+        <option value="needed">Sort by still needed</option>
       </select>
       <button className="btn">Clear All</button>
     </div>
@@ -329,7 +329,9 @@ function Stats({ items, percentage }) {
   return (
     <footer className="stats u-text-center">
       <p>
-        You already got {items} items. That is {percentage}% of all items.
+        {percentage === 100
+          ? "Good job! You now have all the items from your list!"
+          : `You already got ${items} items. That is ${percentage}% of all items.`}
       </p>
     </footer>
   );
