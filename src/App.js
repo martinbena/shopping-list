@@ -3,13 +3,17 @@ import { v4 } from "uuid";
 
 let initialItems = [
   { id: 1, name: "Egg", quantity: 6, purpose: "Pancakes", inCart: false },
-  { id: 2, name: "Milk", quantity: 2, purpose: "Pancakes" },
-  { id: 3, name: "Sugar", quantity: 1, purpose: "Pancakes" },
-  { id: 4, name: "Flour", quantity: 1, purpose: "Pancakes" },
+  { id: 2, name: "Milk", quantity: 2, purpose: "Pancakes", inCart: false },
+  { id: 3, name: "Sugar", quantity: 1, purpose: "Pancakes", inCart: false },
+  { id: 4, name: "Flour", quantity: 1, purpose: "Pancakes", inCart: false },
 ];
 
-function Button({ children }) {
-  return <button className="btn">{children}</button>;
+function Button({ children, onClick }) {
+  return (
+    <button onClick={onClick} className="btn">
+      {children}
+    </button>
+  );
 }
 
 function ButtonSvg({ children, onClick }) {
@@ -23,10 +27,22 @@ function ButtonSvg({ children, onClick }) {
 export default function App() {
   const [items, setItems] = useState(initialItems);
   const [selected, setSelected] = useState(null);
-  const [showEdit, setShowEdit] = useState(false);
+  const [sortBy, setSortBy] = useState("input");
 
   const itemsInCart = items.filter((item) => item.inCart).length;
-  const percentageInCart = (itemsInCart / items.length) * 100;
+  const percentageInCart = Math.round((itemsInCart / items.length) * 100);
+
+  let sortedItems;
+
+  if (sortBy === "input") sortedItems = items;
+  if (sortBy === "name")
+    sortedItems = items.slice().sort((a, b) => a.name.localeCompare(b.name));
+  if (sortBy === "purpose")
+    sortedItems = items
+      .slice()
+      .sort((a, b) => a.purpose.localeCompare(b.purpose));
+  if (sortBy === "needed")
+    sortedItems = items.slice().sort((a, b) => +a.inCart - +b.inCart);
 
   function handleAddItem(item) {
     setItems((items) => [...items, item]);
@@ -51,12 +67,18 @@ export default function App() {
     setSelected((cur) => (cur?.id === id ? null : cur));
   }
 
-  function handleToggleEdit() {
-    setShowEdit((showEdit) => !showEdit);
-  }
-
   function handleSelection(item) {
     setSelected((cur) => (cur?.id === item.id ? null : item));
+  }
+
+  function handleClearList() {
+    const approval = window.confirm(
+      "Are you sure that you want to delete all items from your list?"
+    );
+
+    if (!approval) return;
+
+    setItems([]);
   }
 
   return (
@@ -66,20 +88,24 @@ export default function App() {
       <div className="container">
         <div className="grid">
           <ShoppingList
-            items={items}
-            showEdit={showEdit}
             onToggleItem={handleToggleItem}
             onDeleteItem={handleDeleteItem}
-            onToggleEdit={handleToggleEdit}
             onSelect={handleSelection}
             selected={selected}
+            onClearList={handleClearList}
+            sortedItems={sortedItems}
           />
           {selected && (
             <FormEditItem onSelect={setSelected} selected={selected} />
           )}
         </div>
       </div>
-      <Actions />
+      <Actions
+        items={items}
+        onClearList={handleClearList}
+        sortBy={sortBy}
+        onSortBy={setSortBy}
+      />
       <Stats items={itemsInCart} percentage={percentageInCart} />
     </>
   );
@@ -169,17 +195,17 @@ function AddItemForm({ onAddItem }) {
 }
 
 function ShoppingList({
-  items,
   showEdit,
   onToggleItem,
   onDeleteItem,
   onToggleEdit,
   onSelect,
   selected,
+  sortedItems,
 }) {
   return (
     <ul className="shopping-list">
-      {items.map((item) => (
+      {sortedItems.map((item) => (
         <Item
           item={item}
           key={item.id}
@@ -232,15 +258,7 @@ function FormEditItem({ onSelect, selected }) {
   );
 }
 
-function Item({
-  item,
-  showEdit,
-  onToggleItem,
-  onDeleteItem,
-  onToggleEdit,
-  onSelect,
-  selected,
-}) {
+function Item({ item, onToggleItem, onDeleteItem, onSelect, selected }) {
   return (
     <li
       className={`shopping-item${item.inCart ? "__cart" : ""} ${
@@ -311,16 +329,16 @@ function Item({
   );
 }
 
-function Actions() {
+function Actions({ onClearList, sortBy, onSortBy }) {
   return (
     <div className="actions">
-      <select>
+      <select value={sortBy} onChange={(e) => onSortBy(e.target.value)}>
         <option value="input">Sort by input order</option>
         <option value="name">Sort by item name</option>
         <option value="purpose">Sort by purpose</option>
         <option value="needed">Sort by still needed</option>
       </select>
-      <button className="btn">Clear All</button>
+      <Button onClick={() => onClearList()}>Clear All</Button>
     </div>
   );
 }
