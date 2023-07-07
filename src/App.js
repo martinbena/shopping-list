@@ -2,10 +2,10 @@ import { useState } from "react";
 import { v4 } from "uuid";
 
 let initialItems = [
-  { id: 1, item: "Egg", quantity: 6, purpose: "Pancakes", inCart: false },
-  // { id: 2, item: "Milk", quantity: 2, purpose: "Pancakes" },
-  // { id: 3, item: "Sugar", quantity: 1, purpose: "Pancakes" },
-  // { id: 4, item: "Flour", quantity: 1, purpose: "Pancakes" },
+  { id: 1, name: "Egg", quantity: 6, purpose: "Pancakes", inCart: false },
+  { id: 2, name: "Milk", quantity: 2, purpose: "Pancakes" },
+  { id: 3, name: "Sugar", quantity: 1, purpose: "Pancakes" },
+  { id: 4, name: "Flour", quantity: 1, purpose: "Pancakes" },
 ];
 
 function Button({ children }) {
@@ -22,19 +22,24 @@ function ButtonSvg({ children, onClick }) {
 
 export default function App() {
   const [items, setItems] = useState(initialItems);
+  const [selected, setSelected] = useState(null);
+  const [showEdit, setShowEdit] = useState(false);
+
+  const itemsInCart = items.filter((item) => item.inCart).length;
+  const percentageInCart = (itemsInCart / items.length) * 100;
 
   function handleAddItem(item) {
     setItems((items) => [...items, item]);
   }
 
-  function handleDeleteItem(id, item) {
+  function handleDeleteItem(item) {
     const approval = window.confirm(
-      `Are you sure that you want to delete ${item}?`
+      `Are you sure that you want to delete ${item.name}?`
     );
 
     if (!approval) return;
 
-    setItems((items) => items.filter((item) => item.id !== id));
+    setItems((items) => items.filter((cur) => cur.id !== item.id));
   }
 
   function handleToggleItem(id) {
@@ -43,6 +48,15 @@ export default function App() {
         item.id === id ? { ...item, inCart: !item.inCart } : item
       )
     );
+    setSelected((cur) => (cur?.id === id ? null : cur));
+  }
+
+  function handleToggleEdit() {
+    setShowEdit((showEdit) => !showEdit);
+  }
+
+  function handleSelection(item) {
+    setSelected((cur) => (cur?.id === item.id ? null : item));
   }
 
   return (
@@ -53,14 +67,20 @@ export default function App() {
         <div className="grid">
           <ShoppingList
             items={items}
+            showEdit={showEdit}
             onToggleItem={handleToggleItem}
             onDeleteItem={handleDeleteItem}
+            onToggleEdit={handleToggleEdit}
+            onSelect={handleSelection}
+            selected={selected}
           />
-          <FormEditItem />
+          {selected && (
+            <FormEditItem onSelect={setSelected} selected={selected} />
+          )}
         </div>
       </div>
       <Actions />
-      <Stats />
+      <Stats items={itemsInCart} percentage={percentageInCart} />
     </>
   );
 }
@@ -86,7 +106,7 @@ function Header() {
 
 function AddItemForm({ onAddItem }) {
   const [quantity, setQuantity] = useState("");
-  const [item, setItem] = useState("");
+  const [name, setName] = useState("");
   const [purpose, setPurpose] = useState("");
 
   function handleSubmit(e) {
@@ -95,7 +115,7 @@ function AddItemForm({ onAddItem }) {
     const id = v4();
     const newItem = {
       id: id,
-      item: item,
+      name: name,
       quantity: quantity,
       purpose: purpose,
       inCart: false,
@@ -104,7 +124,7 @@ function AddItemForm({ onAddItem }) {
     onAddItem(newItem);
 
     setQuantity("");
-    setItem("");
+    setName("");
     setPurpose("");
   }
 
@@ -126,8 +146,8 @@ function AddItemForm({ onAddItem }) {
           <label>*Item:</label>
           <input
             type="text"
-            value={item}
-            onChange={(e) => setItem(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             placeholder="Egg"
           />
         </div>
@@ -148,44 +168,52 @@ function AddItemForm({ onAddItem }) {
   );
 }
 
-function ShoppingList({ items, onToggleItem, onDeleteItem }) {
+function ShoppingList({
+  items,
+  showEdit,
+  onToggleItem,
+  onDeleteItem,
+  onToggleEdit,
+  onSelect,
+  selected,
+}) {
   return (
     <ul className="shopping-list">
       {items.map((item) => (
         <Item
-          item={item.item}
-          id={item.id}
-          quantity={item.quantity}
-          purpose={item.purpose}
-          cart={item.inCart}
+          item={item}
           key={item.id}
           onToggleItem={onToggleItem}
           onDeleteItem={onDeleteItem}
+          onToggleEdit={onToggleEdit}
+          showEdit={showEdit}
+          onSelect={onSelect}
+          selected={selected}
         />
       ))}
     </ul>
   );
 }
 
-function FormEditItem() {
+function FormEditItem({ onSelect, selected }) {
   return (
     <div className="edit-item__wrapper">
-      <h2 className="heading-secondary">Edit XX</h2>
+      <h2 className="heading-secondary">Edit {selected.name}</h2>
       <form className="edit-item">
         <div className="edit-item__groups">
           <div className="edit-item__group">
             <label>*Item</label>
-            <input type="text" />
+            <input type="text" value={selected.name} />
           </div>
 
           <div className="edit-item__group">
             <label>*Quantity</label>
-            <input type="text" />
+            <input type="text" value={selected.quantity} />
           </div>
 
           <div className="edit-item__group">
-            <label>For</label>
-            <input type="text" />
+            <label>Purpose</label>
+            <input type="text" value={selected.purpose} />
           </div>
         </div>
         <div className="u-text-center">
@@ -194,7 +222,7 @@ function FormEditItem() {
       </form>
 
       <span className="edit-item__close">
-        <ButtonSvg>
+        <ButtonSvg onClick={() => onSelect(null)}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
             <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
           </svg>
@@ -206,49 +234,69 @@ function FormEditItem() {
 
 function Item({
   item,
-  quantity,
-  purpose,
-  id,
-  cart,
+  showEdit,
   onToggleItem,
   onDeleteItem,
+  onToggleEdit,
+  onSelect,
+  selected,
 }) {
   return (
-    <li className={`shopping-item${cart ? "__cart" : ""}`}>
+    <li
+      className={`shopping-item${item.inCart ? "__cart" : ""} ${
+        item.id === selected?.id ? "selected-item" : ""
+      }`}
+    >
       <div className="shopping-item__content">
         <div className="shopping-item__left">
           <div className="shopping-item__checkbox">
             <input
               type="checkbox"
-              id={`checkbox-${id}`}
-              onChange={(e) => onToggleItem(id)}
+              id={`checkbox-${item.id}`}
+              onChange={(e) => onToggleItem(item.id)}
             />
-            <label htmlFor={`checkbox-${id}`}>
+            <label htmlFor={`checkbox-${item.id}`}>
               <div className="tick_mark"></div>
             </label>
           </div>
 
           <div className="shopping-item__quantity">
-            <p>{quantity} x</p>
+            <p>{item.quantity} x</p>
           </div>
         </div>
 
         <div className="shopping-item__text">
-          <p>{item}</p>
-          <p className="shopping-item__text-cause">{purpose}</p>
+          <p>{item.name}</p>
+          <p className="shopping-item__text-cause">{item.purpose}</p>
         </div>
         <div className="shopping-item__buttons">
-          <ButtonSvg>
-            <svg
-              className="shopping-item__edit"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 256 256"
-            >
-              <path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path>
-            </svg>
-          </ButtonSvg>
+          {!item.inCart && (
+            <ButtonSvg onClick={() => onSelect(item)}>
+              {(!selected || selected.id !== item.id) && (
+                <svg
+                  className="shopping-item__edit"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 256 256"
+                >
+                  <path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path>
+                </svg>
+              )}
+              {selected?.id === item.id && (
+                <svg
+                  className="shopping-item__edit"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="32"
+                  height="32"
+                  fill="#000000"
+                  viewBox="0 0 256 256"
+                >
+                  <path d="M53.92,34.62A8,8,0,1,0,42.08,45.38l48.2,53L36.68,152A15.89,15.89,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31l50.4-50.39,47.69,52.46a8,8,0,1,0,11.84-10.76ZM92.69,208H48V163.31l53.06-53,42.56,46.81ZM227.32,73.37,182.63,28.69a16,16,0,0,0-22.63,0L118.33,70.36a8,8,0,0,0,11.32,11.31L136,75.31,180.69,120l-9,9A8,8,0,0,0,183,140.34L227.32,96A16,16,0,0,0,227.32,73.37ZM192,108.69,147.32,64l24-24L216,84.69Z"></path>
+                </svg>
+              )}
+            </ButtonSvg>
+          )}
 
-          <ButtonSvg onClick={(e) => onDeleteItem(id, item)}>
+          <ButtonSvg onClick={() => onDeleteItem(item)}>
             <svg
               className="shopping-item__delete"
               xmlns="http://www.w3.org/2000/svg"
@@ -277,10 +325,12 @@ function Actions() {
   );
 }
 
-function Stats() {
+function Stats({ items, percentage }) {
   return (
     <footer className="stats u-text-center">
-      <p>You already got XX items. That is XX% of all items.</p>
+      <p>
+        You already got {items} items. That is {percentage}% of all items.
+      </p>
     </footer>
   );
 }
