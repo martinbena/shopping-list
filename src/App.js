@@ -1,18 +1,35 @@
-const items = [
-  { id: 1, item: "Egg", quantity: 6, for: "Pancakes" },
-  { id: 2, item: "Milk", quantity: 2, for: "Pancakes" },
-  { id: 3, item: "Sugar", quantity: 1, for: "Pancakes" },
-  { id: 4, item: "Flour", quantity: 1, for: "Pancakes" },
+import { useState } from "react";
+import { v4 } from "uuid";
+
+let initialItems = [
+  { id: 1, item: "Egg", quantity: 6, purpose: "Pancakes", inCart: false },
+  // { id: 2, item: "Milk", quantity: 2, purpose: "Pancakes" },
+  // { id: 3, item: "Sugar", quantity: 1, purpose: "Pancakes" },
+  // { id: 4, item: "Flour", quantity: 1, purpose: "Pancakes" },
 ];
 
 export default function App() {
+  const [items, setItems] = useState(initialItems);
+
+  function handleAddItem(item) {
+    setItems((items) => [...items, item]);
+  }
+
+  function handleToggleItem(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, inCart: !item.inCart } : item
+      )
+    );
+  }
+
   return (
     <>
       <Header />
-      <AddItemForm />
+      <AddItemForm onAddItem={handleAddItem} />
       <div className="container">
         <div className="grid">
-          <ShoppingList />
+          <ShoppingList items={items} onToggleItem={handleToggleItem} />
           <FormEditItem />
         </div>
       </div>
@@ -41,23 +58,62 @@ function Header() {
   );
 }
 
-function AddItemForm() {
+function AddItemForm({ onAddItem }) {
+  const [quantity, setQuantity] = useState("");
+  const [item, setItem] = useState("");
+  const [purpose, setPurpose] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    const id = v4();
+    const newItem = {
+      id: id,
+      item: item,
+      quantity: quantity,
+      purpose: purpose,
+      inCart: false,
+    };
+
+    onAddItem(newItem);
+
+    setQuantity("");
+    setItem("");
+    setPurpose("");
+  }
+
   return (
     <div className="add-form__wrapper">
-      <form className="add-form">
+      <form className="add-form" onSubmit={handleSubmit}>
         <div className="add-form__item">
           <label>*Quantity:</label>
-          <input className="add-form__item-quantity" type="text" />
+          <input
+            className="add-form__item-quantity"
+            type="number"
+            value={quantity}
+            onChange={(e) => setQuantity(+e.target.value)}
+            placeholder="6"
+          />
         </div>
 
         <div className="add-form__item">
           <label>*Item:</label>
-          <input type="text" />
+          <input
+            type="text"
+            value={item}
+            onChange={(e) => setItem(e.target.value)}
+            placeholder="Egg"
+          />
         </div>
 
         <div className="add-form__item">
-          <label>For(cake, household...): </label>
-          <input type="text" />
+          <label>Purpose: </label>
+          <input
+            type="text"
+            value={purpose}
+            onChange={(e) => setPurpose(e.target.value)}
+            placeholder="Pancakes"
+          />
         </div>
 
         <button className="btn">Add</button>
@@ -66,7 +122,7 @@ function AddItemForm() {
   );
 }
 
-function ShoppingList() {
+function ShoppingList({ items, onToggleItem }) {
   return (
     <ul className="shopping-list">
       {items.map((item) => (
@@ -74,8 +130,10 @@ function ShoppingList() {
           item={item.item}
           id={item.id}
           quantity={item.quantity}
-          cause={item.for}
+          purpose={item.purpose}
+          cart={item.inCart}
           key={item.id}
+          onToggleItem={onToggleItem}
         />
       ))}
     </ul>
@@ -119,13 +177,17 @@ function FormEditItem() {
   );
 }
 
-function Item({ item, quantity, cause, id }) {
+function Item({ item, quantity, purpose, id, cart, onToggleItem }) {
   return (
-    <li className="shopping-item">
+    <li className={`shopping-item${cart ? "__cart" : ""}`}>
       <div className="shopping-item__content">
         <div className="shopping-item__left">
           <div className="shopping-item__checkbox">
-            <input type="checkbox" id={`checkbox-${id}`} />
+            <input
+              type="checkbox"
+              id={`checkbox-${id}`}
+              onChange={(e) => onToggleItem(id)}
+            />
             <label htmlFor={`checkbox-${id}`}>
               <div className="tick_mark"></div>
             </label>
@@ -138,7 +200,7 @@ function Item({ item, quantity, cause, id }) {
 
         <div className="shopping-item__text">
           <p>{item}</p>
-          <p className="shopping-item__text-cause">{cause}</p>
+          <p className="shopping-item__text-cause">{purpose}</p>
         </div>
         <div className="shopping-item__buttons">
           <svg

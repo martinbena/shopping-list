@@ -9,7 +9,7 @@
   --color-bg-dark: #51cf66;
   --color-btn: #4caf50;
   --color-btn-hover: #449e48;
-  --color-bg-added: #fff3bf;
+  --color-bg-cart: #fff3bf;
   --color-bg-edit: #8ce99a;
 }
 
@@ -33,6 +33,7 @@ body {
 }
 
 input[type="text"],
+input[type="number"],
 select {
   border: 1px solid transparent;
   font-family: inherit;
@@ -43,6 +44,7 @@ select {
 }
 
 input[type="text"]:focus,
+input[type="number"]:focus,
 select:focus {
   outline: none;
   border: 1px solid #2b8a3e;
@@ -115,7 +117,7 @@ option {
 }
 
 .add-form__item-quantity {
-  width: 4.8rem;
+  width: 6.4rem;
 }
 
 .grid {
@@ -134,11 +136,20 @@ option {
   gap: 2rem;
 }
 
-.shopping-item {
-  background-color: var(--color-bg-light);
+.shopping-item,
+.shopping-item__cart {
   transform: skew(-25deg);
   padding: 1.6rem;
   transition: all 0.3s;
+}
+
+.shopping-item {
+  background-color: var(--color-bg-light);
+}
+
+.shopping-item__cart {
+  background-color: var(--color-bg-cart);
+  text-decoration: line-through;
 }
 
 .shopping-item:hover,
