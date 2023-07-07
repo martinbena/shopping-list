@@ -342,10 +342,19 @@ option {
   text-align: center;
 }
 
+.btnSvg {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
 .edit-item__close {
   position: absolute;
   top: 2rem;
   right: 2rem;
+}
+
+.edit-item__close svg {
   fill: #c92a2a;
   height: 3.2rem;
   width: 3.2rem;

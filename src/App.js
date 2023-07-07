@@ -8,11 +8,33 @@ let initialItems = [
   // { id: 4, item: "Flour", quantity: 1, purpose: "Pancakes" },
 ];
 
+function Button({ children }) {
+  return <button className="btn">{children}</button>;
+}
+
+function ButtonSvg({ children, onClick }) {
+  return (
+    <button onClick={onClick} className="btnSvg">
+      {children}
+    </button>
+  );
+}
+
 export default function App() {
   const [items, setItems] = useState(initialItems);
 
   function handleAddItem(item) {
     setItems((items) => [...items, item]);
+  }
+
+  function handleDeleteItem(id, item) {
+    const approval = window.confirm(
+      `Are you sure that you want to delete ${item}?`
+    );
+
+    if (!approval) return;
+
+    setItems((items) => items.filter((item) => item.id !== id));
   }
 
   function handleToggleItem(id) {
@@ -29,7 +51,11 @@ export default function App() {
       <AddItemForm onAddItem={handleAddItem} />
       <div className="container">
         <div className="grid">
-          <ShoppingList items={items} onToggleItem={handleToggleItem} />
+          <ShoppingList
+            items={items}
+            onToggleItem={handleToggleItem}
+            onDeleteItem={handleDeleteItem}
+          />
           <FormEditItem />
         </div>
       </div>
@@ -116,13 +142,13 @@ function AddItemForm({ onAddItem }) {
           />
         </div>
 
-        <button className="btn">Add</button>
+        <Button>Add</Button>
       </form>
     </div>
   );
 }
 
-function ShoppingList({ items, onToggleItem }) {
+function ShoppingList({ items, onToggleItem, onDeleteItem }) {
   return (
     <ul className="shopping-list">
       {items.map((item) => (
@@ -134,6 +160,7 @@ function ShoppingList({ items, onToggleItem }) {
           cart={item.inCart}
           key={item.id}
           onToggleItem={onToggleItem}
+          onDeleteItem={onDeleteItem}
         />
       ))}
     </ul>
@@ -162,22 +189,30 @@ function FormEditItem() {
           </div>
         </div>
         <div className="u-text-center">
-          <button className="btn">Edit</button>
+          <Button>Edit</Button>
         </div>
       </form>
 
-      <svg
-        className="edit-item__close"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 256 256"
-      >
-        <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
-      </svg>
+      <span className="edit-item__close">
+        <ButtonSvg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+            <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
+          </svg>
+        </ButtonSvg>
+      </span>
     </div>
   );
 }
 
-function Item({ item, quantity, purpose, id, cart, onToggleItem }) {
+function Item({
+  item,
+  quantity,
+  purpose,
+  id,
+  cart,
+  onToggleItem,
+  onDeleteItem,
+}) {
   return (
     <li className={`shopping-item${cart ? "__cart" : ""}`}>
       <div className="shopping-item__content">
@@ -203,20 +238,25 @@ function Item({ item, quantity, purpose, id, cart, onToggleItem }) {
           <p className="shopping-item__text-cause">{purpose}</p>
         </div>
         <div className="shopping-item__buttons">
-          <svg
-            className="shopping-item__edit"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 256 256"
-          >
-            <path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path>
-          </svg>
-          <svg
-            className="shopping-item__delete"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 256 256"
-          >
-            <path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path>
-          </svg>
+          <ButtonSvg>
+            <svg
+              className="shopping-item__edit"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 256 256"
+            >
+              <path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path>
+            </svg>
+          </ButtonSvg>
+
+          <ButtonSvg onClick={(e) => onDeleteItem(id, item)}>
+            <svg
+              className="shopping-item__delete"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 256 256"
+            >
+              <path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path>
+            </svg>
+          </ButtonSvg>
         </div>
       </div>
     </li>
