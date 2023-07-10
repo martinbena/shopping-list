@@ -1,5 +1,4 @@
 /* BELOW 1200px */
-
 @media (max-width: 75em) {
   html {
     font-size: 56.25%;
@@ -7,9 +6,23 @@
 }
 
 /* BELOW 944px */
-
-@media (max-width: 75em) {
+@media (max-width: 59em) {
   html {
     font-size: 50%;
+  }
+
+  .container {
+    padding: 3.2rem;
+  }
+
+  .grid {
+    gap: 1.2rem;
+  }
+}
+
+/* BELOW 744px */
+@media (max-width: 46.5em) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

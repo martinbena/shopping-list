@@ -13,7 +13,7 @@ export default function ShoppingList({
   return (
     <div className="container">
       <ul className="shopping-list">
-        <div className="grid2">
+        <div className="grid">
           {sortedItems.map((item) => (
             <Item
               item={item}

@@ -2,7 +2,6 @@ import { useState } from "react";
 import Header from "./Header";
 import AddItemForm from "./AddItemForm";
 import ShoppingList from "./ShoppingList";
-import FormEditItem from "./FormEditItem";
 import Actions from "./Actions";
 import Stats from "./Stats";
 
