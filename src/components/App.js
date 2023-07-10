@@ -41,10 +41,8 @@ export default function App() {
     const approval = window.confirm(
       `Are you sure that you want to delete ${item.name}?`
     );
-
-    if (!approval) return;
-
-    setItems((items) => items.filter((cur) => cur.id !== item.id));
+    if (approval)
+      setItems((items) => items.filter((cur) => cur.id !== item.id));
   }
 
   function handleToggleItem(id) {
@@ -64,10 +62,7 @@ export default function App() {
     const approval = window.confirm(
       "Are you sure that you want to delete all items from your list?"
     );
-
-    if (!approval) return;
-
-    setItems([]);
+    if (approval) setItems([]);
   }
 
   function handleEditSelected(editedItem) {

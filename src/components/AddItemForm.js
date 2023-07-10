@@ -37,7 +37,10 @@ export default function AddItemForm({ onAddItem }) {
             value={quantity}
             onChange={(e) => setQuantity(+e.target.value)}
             placeholder="6"
+            min="1"
+            required
           />
+          {/* <p>Please fill in the quantity.</p> */}
         </div>
 
         <div className="add-form__item">
@@ -47,7 +50,10 @@ export default function AddItemForm({ onAddItem }) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Egg"
+            pattern="[A-Za-z]{2,}"
+            required
           />
+          {/* <p>Please fill in the item.</p> */}
         </div>
 
         <div className="add-form__item">
@@ -57,6 +63,7 @@ export default function AddItemForm({ onAddItem }) {
             value={purpose}
             onChange={(e) => setPurpose(e.target.value)}
             placeholder="Pancakes"
+            pattern="[A-Za-z]{2,}"
           />
         </div>
 

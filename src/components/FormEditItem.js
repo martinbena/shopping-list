@@ -30,6 +30,8 @@ export default function FormEditItem({ onSelect, selected, onEditSelected }) {
               type="text"
               value={editedName}
               onChange={(e) => setEditedName(e.target.value)}
+              pattern="[A-Za-z]{2,}"
+              required
             />
           </div>
 
@@ -39,6 +41,8 @@ export default function FormEditItem({ onSelect, selected, onEditSelected }) {
               type="number"
               value={editedQuantity}
               onChange={(e) => setEditedQuantity(+e.target.value)}
+              min="1"
+              required
             />
           </div>
 
@@ -48,6 +52,7 @@ export default function FormEditItem({ onSelect, selected, onEditSelected }) {
               type="text"
               value={editedPurpose}
               onChange={(e) => setEditedPurpose(e.target.value)}
+              pattern="[A-Za-z]{2,}"
             />
           </div>
         </div>
