@@ -106,7 +106,7 @@ export default function App() {
         </div>
       </div>
       {items.length > 0 && (
-        <>
+        <div className="bottom">
           <Actions
             items={items}
             onClearList={handleClearList}
@@ -114,7 +114,7 @@ export default function App() {
             onSortBy={setSortBy}
           />
           <Stats items={itemsInCart} percentage={percentageInCart} />
-        </>
+        </div>
       )}
     </>
   );

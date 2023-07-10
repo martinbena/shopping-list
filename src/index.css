@@ -57,6 +57,7 @@ option {
 .container {
   max-width: 120rem;
   margin: 0 auto;
+  padding: 0 4.8rem;
 }
 
 .header {
@@ -123,7 +124,7 @@ option {
 .grid {
   display: grid;
   min-height: 66vh;
-  grid-template-columns: 40rem 60rem;
+  grid-template-columns: 2fr 3fr;
   column-gap: 6.4rem;
   padding: 3.2rem 0;
   align-items: start;
@@ -379,4 +380,11 @@ option {
   background-color: var(--color-bg-dark);
   font-size: 3rem;
   padding: 1.2rem 0;
+}
+
+.bottom {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100vw;
 }
