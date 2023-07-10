@@ -8,21 +8,27 @@ export default function ShoppingList({
   onSelect,
   selected,
   sortedItems,
+  onEditSelected,
 }) {
   return (
-    <ul className="shopping-list">
-      {sortedItems.map((item) => (
-        <Item
-          item={item}
-          key={item.id}
-          onToggleItem={onToggleItem}
-          onDeleteItem={onDeleteItem}
-          onToggleEdit={onToggleEdit}
-          showEdit={showEdit}
-          onSelect={onSelect}
-          selected={selected}
-        />
-      ))}
-    </ul>
+    <div className="container">
+      <ul className="shopping-list">
+        <div className="grid2">
+          {sortedItems.map((item) => (
+            <Item
+              item={item}
+              key={item.id}
+              onToggleItem={onToggleItem}
+              onDeleteItem={onDeleteItem}
+              onToggleEdit={onToggleEdit}
+              showEdit={showEdit}
+              onSelect={onSelect}
+              selected={selected}
+              onEditSelected={onEditSelected}
+            />
+          ))}
+        </div>
+      </ul>
+    </div>
   );
 }

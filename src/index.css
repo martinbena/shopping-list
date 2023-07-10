@@ -54,10 +54,16 @@ option {
   text-align: left;
 }
 
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3.2rem;
+}
+
 .container {
   max-width: 120rem;
   margin: 0 auto;
-  padding: 0 4.8rem;
+  padding: 4.8rem;
 }
 
 .header {
@@ -117,8 +123,9 @@ option {
   margin-right: 1.2rem;
 }
 
-.add-form__item-quantity {
-  width: 6.4rem;
+.add-form__item-quantity,
+.edit-item__group input[type="number"] {
+  max-width: 6.4rem;
 }
 
 .grid {
@@ -167,8 +174,13 @@ option {
   align-items: center;
 }
 
-.shopping-item__content {
+.shopping-item__content,
+.edit-item__content {
   transform: skew(25deg);
+}
+
+.shopping-item__content,
+.edit-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -179,24 +191,19 @@ option {
   font-size: 1.6rem;
 }
 
-.shopping-item__buttons {
+.shopping-item__buttons,
+.edit-item__buttons {
   display: flex;
   gap: 0.8rem;
 }
 
-.shopping-item__buttons svg {
-  display: flex;
-  gap: 0.8rem;
-  cursor: pointer;
-  height: 3.2rem;
-  width: 3.2rem;
-}
-
-.shopping-item__edit {
+.shopping-item__edit,
+.edit-item__confirm {
   fill: #4e342e;
 }
 
-.shopping-item__delete {
+.shopping-item__delete,
+.edit-item__close {
   fill: #c92a2a;
 }
 
@@ -316,27 +323,22 @@ option {
   opacity: 1;
 }
 
-.edit-item__wrapper {
-  margin-left: 6rem;
-  background-color: var(--color-bg-edit);
-  padding: 3.2rem 6.4rem;
-  border-radius: 2rem;
-  position: relative;
-  -webkit-box-shadow: 0px 1rem 3rem 0.5rem rgba(0, 0, 0, 0.15);
-  -moz-box-shadow: 0px 1rem 3rem 0.5rem rgba(0, 0, 0, 0.15);
-  box-shadow: 0px 1rem 3rem 0.5rem rgba(0, 0, 0, 0.15);
-}
-
 .edit-item__groups {
   display: flex;
-  flex-direction: column;
-  gap: 2.4rem;
-  margin: 3.2rem 0;
+  gap: 4.8rem;
+  align-items: center;
 }
 
 .edit-item__group {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+.edit-item__group input {
+  max-width: 9.6rem;
+  border-radius: 5px;
 }
 
 .u-text-center {
@@ -347,16 +349,14 @@ option {
   background-color: transparent;
   border: none;
   cursor: pointer;
+  transition: all 0.3s ease-out;
 }
 
-.edit-item__close {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
+.btnSvg:hover > svg {
+  transform: translateY(-0.75px);
 }
 
-.edit-item__close svg {
-  fill: #c92a2a;
+.btnSvg svg {
   height: 3.2rem;
   width: 3.2rem;
 }

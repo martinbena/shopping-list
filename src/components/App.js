@@ -39,7 +39,7 @@ export default function App() {
 
   function handleDeleteItem(item) {
     const approval = window.confirm(
-      `Are you sure that you want to delete ${item.name}?`
+      `Are you sure that you want to delete "${item.name}"?`
     );
     if (approval)
       setItems((items) => items.filter((cur) => cur.id !== item.id));
@@ -86,25 +86,15 @@ export default function App() {
     <>
       <Header />
       <AddItemForm onAddItem={handleAddItem} />
-      <div className="container">
-        <div className="grid">
-          <ShoppingList
-            onToggleItem={handleToggleItem}
-            onDeleteItem={handleDeleteItem}
-            onSelect={handleSelection}
-            selected={selected}
-            onClearList={handleClearList}
-            sortedItems={sortedItems}
-          />
-          {selected && (
-            <FormEditItem
-              onSelect={setSelected}
-              selected={selected}
-              onEditSelected={handleEditSelected}
-            />
-          )}
-        </div>
-      </div>
+      <ShoppingList
+        onToggleItem={handleToggleItem}
+        onDeleteItem={handleDeleteItem}
+        onSelect={handleSelection}
+        selected={selected}
+        onClearList={handleClearList}
+        sortedItems={sortedItems}
+        onEditSelected={handleEditSelected}
+      />
       {items.length > 0 && (
         <div className="bottom">
           <Actions
