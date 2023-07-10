@@ -67,7 +67,9 @@ export default function AddItemForm({ onAddItem }) {
           />
         </div>
 
-        <Button>Add</Button>
+        <div className="add-form__button">
+          <Button>Add</Button>
+        </div>
       </form>
     </div>
   );

@@ -356,11 +356,12 @@ option {
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 6.4rem;
   background-color: var(--color-bg-light);
-  padding: 1.2rem 0;
+  padding: 1.2rem;
 }
 
 .actions select {
